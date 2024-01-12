@@ -72,10 +72,13 @@ void OnTick()
    if(Trigger(true)){
       double sl = currentTick.bid-(InpStopLoss)*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
       double tp = InpTakeProfit==0?0:currentTick.bid+(InpTakeProfit)*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
-      Print("Before:",sl," ",tp);
-      //if(!NormalizePrice(sl,sl)){return;}
-      //if(!NormalizePrice(tp,tp)){return;}
-      Print("After:",sl," ",tp);
+      
+      if(!NormalizePrice(sl,sl)){return;}
+      if(!NormalizePrice(tp,tp)){return;}
+      
+      //calculate lots
+      double lots;
+      if(!CalculateLots(currentTick.bid-sl,lots)){return;}
       
       trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,InpVolume,currentTick.ask,sl,tp,"Coin Flip EA");  
    }
@@ -83,10 +86,14 @@ void OnTick()
    if(Trigger(false)){
       double sl = currentTick.ask+InpStopLoss*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
       double tp = InpTakeProfit==0?0:currentTick.ask-InpTakeProfit*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
-      Print("Before:",sl," ",tp);
+      
+      //calculate lots
+      double lots;
+      if(!CalculateLots(currentTick.bid-sl,lots)){return;}
+      
       if(!NormalizePrice(sl,sl)){return;}
       if(!NormalizePrice(tp,tp)){return;}
-      Print("After:",sl," ",tp);
+      
       
       trade.PositionOpen(_Symbol,ORDER_TYPE_SELL,InpVolume,currentTick.bid,sl,tp,"Coin Flip EA");  
    }
