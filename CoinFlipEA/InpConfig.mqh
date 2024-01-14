@@ -21,6 +21,7 @@ input ENUM_TIMEFRAMES InpAROONTimeframe = PERIOD_H4;  //Timeframe
 input int InpAROONPeriod = 25;                        //Period (number of bars to count, 0=off)
 input int InpAROONShift = 0;                          //Horizontal Shift;
 input int InpAROONFilterLevel = 50;                   //Filter level in %
+input bool InpAROONCloseAtNewState = false;           //Close trades at new states?
 
 bool CheckInputs(){
    if(InpMagicnumber<=0){

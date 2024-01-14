@@ -8,6 +8,7 @@ enum MARKET_STATE{
 };
 // Trend Observation variable
 MARKET_STATE curr_state;
+bool new_state=false;
 
 //AROON Indicator variables
 int AROON_handle;

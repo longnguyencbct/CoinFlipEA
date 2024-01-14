@@ -89,7 +89,6 @@ bool CalculateLots(double slDistance, double &lots){
    
    return true;
 }
-
 //check lots for min, max and step
 bool CheckLots(double &lots){
    

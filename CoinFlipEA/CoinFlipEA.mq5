@@ -13,6 +13,7 @@
 #include "Helper.mqh"
 #include "CondTrigger.mqh"
 #include "CondFilter.mqh"
+#include "CondClose.mqh"
 #include "TrendObservation.mqh"
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -82,9 +83,22 @@ void OnTick()
          Print(GetLastError());
          return;
       }
+      string curr_state_str;
+      switch(curr_state){
+         case UP_TREND:
+            curr_state_str="Up Trend";
+            break;
+         case DOWN_TREND:
+            curr_state_str="Down Trend";
+            break;
+         case NOT_TRENDING:
+            curr_state_str="Not Trending";
+            break;
+      }
       Comment("AROON:",
               "\n Up[0]: ",AROON_Up[0],
-              "\n Down[0]: ",AROON_Down[0]);
+              "\n Down[0]: ",AROON_Down[0],
+              "\n Market State: ",curr_state_str);
    }
    //count open positions
    if(!CountOpenPositions(cntBuy,cntSell)){return;}
@@ -101,6 +115,9 @@ void OnTick()
    // Trend Observation
    TrendObservation();
    
+   //Close condition
+   CondClose();
+   
    //check for lower band cross to open a buy position
    if(Trigger(true)&&Filter(true)){
       double sl = currentTick.bid-(InpStopLoss)*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
@@ -113,7 +130,7 @@ void OnTick()
       double lots;
       if(!CalculateLots(currentTick.bid-sl,lots)){return;}
       
-      trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,InpVolume,currentTick.ask,sl,tp,"Coin Flip EA");  
+      trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,lots,currentTick.ask,sl,tp,"Coin Flip EA");  
    }
    //check for upper band cross to open a sell position
    if(Trigger(false)&&Filter(false)){
@@ -128,7 +145,7 @@ void OnTick()
       if(!NormalizePrice(tp,tp)){return;}
       
       
-      trade.PositionOpen(_Symbol,ORDER_TYPE_SELL,InpVolume,currentTick.bid,sl,tp,"Coin Flip EA");  
+      trade.PositionOpen(_Symbol,ORDER_TYPE_SELL,lots,currentTick.bid,sl,tp,"Coin Flip EA");  
    }
 }
 //+------------------------------------------------------------------+
