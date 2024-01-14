@@ -12,6 +12,8 @@
 #include "GlobalVar.mqh"
 #include "Helper.mqh"
 #include "CondTrigger.mqh"
+#include "CondFilter.mqh"
+#include "TrendObservation.mqh"
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -19,6 +21,17 @@ int OnInit()
 {
    if(!CheckInputs()){return INIT_PARAMETERS_INCORRECT;}
    trade.SetExpertMagicNumber(InpMagicnumber);
+   if(InpAROONPeriod!=0){
+      AROON_handle=iCustom(_Symbol,InpAROONTimeframe,"Custom\\aroon",InpAROONPeriod,InpAROONShift);
+      
+      if(AROON_handle==INVALID_HANDLE){
+         Alert("Failed to create AROON indicatior handle");
+         return INIT_FAILED;
+      }
+      
+      ArraySetAsSeries(AROON_Up,true);
+      ArraySetAsSeries(AROON_Down,true);
+   }
    if(!InpFixedRandom){
       srand(GetTickCount());
    }else{
@@ -31,7 +44,10 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
 {
-   
+   if(InpAROONPeriod!=0){
+      //release AROON indicator handle
+      if(AROON_handle!=INVALID_HANDLE){IndicatorRelease(AROON_handle);}
+   }
 
 }
 //+------------------------------------------------------------------+
@@ -56,6 +72,20 @@ void OnTick()
    //Get current tick
    if(!SymbolInfoTick(_Symbol,currentTick)){Print("Failed to get tick"); return;}
    
+   if(InpAROONPeriod!=0){
+      //Get AROON Indicator values
+      int values=CopyBuffer(AROON_handle,0,0,1,AROON_Up)
+                +CopyBuffer(AROON_handle,1,0,1,AROON_Down);
+                
+      if(values!=2){
+         Print("Failed to get AROON  indicator values, value:",values);
+         Print(GetLastError());
+         return;
+      }
+      Comment("AROON:",
+              "\n Up[0]: ",AROON_Up[0],
+              "\n Down[0]: ",AROON_Down[0]);
+   }
    //count open positions
    if(!CountOpenPositions(cntBuy,cntSell)){return;}
    
@@ -68,8 +98,11 @@ void OnTick()
       }
    }
    
+   // Trend Observation
+   TrendObservation();
+   
    //check for lower band cross to open a buy position
-   if(Trigger(true)){
+   if(Trigger(true)&&Filter(true)){
       double sl = currentTick.bid-(InpStopLoss)*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
       double tp = InpTakeProfit==0?0:currentTick.bid+(InpTakeProfit)*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
       
@@ -83,7 +116,7 @@ void OnTick()
       trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,InpVolume,currentTick.ask,sl,tp,"Coin Flip EA");  
    }
    //check for upper band cross to open a sell position
-   if(Trigger(false)){
+   if(Trigger(false)&&Filter(false)){
       double sl = currentTick.ask+InpStopLoss*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
       double tp = InpTakeProfit==0?0:currentTick.ask-InpTakeProfit*SymbolInfoDouble(_Symbol,SYMBOL_POINT);
       

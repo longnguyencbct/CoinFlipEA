@@ -16,6 +16,11 @@ input ENUM_TIMEFRAMES InpTimeframe = PERIOD_H1;       //Timeframe
 input group "==== Coin Flip Config ====";
 input int InpExeTimes = 1;                            //number of executions
 input bool InpFixedRandom = false;                    //fixed random?
+input group "==== AROON INDICATOR FILTER ====";
+input ENUM_TIMEFRAMES InpAROONTimeframe = PERIOD_H4;  //Timeframe
+input int InpAROONPeriod = 25;                        //Period (number of bars to count, 0=off)
+input int InpAROONShift = 0;                          //Horizontal Shift;
+input int InpAROONFilterLevel = 50;                   //Filter level in %
 
 bool CheckInputs(){
    if(InpMagicnumber<=0){
@@ -36,6 +41,18 @@ bool CheckInputs(){
    }
    if(InpExeTimes<0){
       Alert("Wrong input: number of executions < 0");
+      return(false);
+   }
+   if(InpAROONPeriod<0){
+      Alert("Wrong input: AROON Period < 0");
+      return(false);
+   }
+   if(InpAROONShift<0){
+      Alert("Wrong input: AROON Shift < 0");
+      return(false);
+   }
+   if(InpAROONFilterLevel<0){
+      Alert("Wrong input: AROON Filter level < 0");
       return(false);
    }
    return true;
