@@ -6,6 +6,10 @@ enum LOT_MODE_ENUM{
    LOT_MODE_MONEY,// lots based on money
    LOT_MODE_PCT_ACCOUNT// lots based on % account
 };
+enum AROON_MODE{
+   COMPARE_LEVEL_MODE,     //compare using level
+   COMPARE_UP_DOWN_MODE    //compare up and down
+};
 input group "==== General ====";
 static input long InpMagicnumber= 234567822;          //magic number
 input double InpVolume = 0.01;                        //lots / money / percent size
@@ -20,7 +24,8 @@ input group "==== AROON INDICATOR FILTER ====";
 input ENUM_TIMEFRAMES InpAROONTimeframe = PERIOD_H4;  //Timeframe
 input int InpAROONPeriod = 25;                        //Period (number of bars to count, 0=off)
 input int InpAROONShift = 0;                          //Horizontal Shift;
-input int InpAROONFilterLevel = 50;                   //Filter level in %
+input AROON_MODE InpAROONMode = COMPARE_LEVEL_MODE;   //AROON Mode
+input int InpAROONFilterLevel = 50;                   //Filter level in % (compare using level)
 input bool InpAROONCloseAtNewState = false;           //Close trades at new states?
 
 bool CheckInputs(){
