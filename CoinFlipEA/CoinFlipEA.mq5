@@ -89,7 +89,7 @@ void OnTick()
       
       //calculate lots
       double lots;
-      if(!CalculateLots(currentTick.bid-sl,lots)){return;}
+      if(!CalculateLots(sl-currentTick.ask,lots)){return;}
       
       if(!NormalizePrice(sl,sl)){return;}
       if(!NormalizePrice(tp,tp)){return;}
