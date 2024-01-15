@@ -11,10 +11,9 @@
 #include "InpConfig.mqh"
 #include "GlobalVar.mqh"
 #include "Helper.mqh"
-#include "CondTrigger.mqh"
-#include "CondFilter.mqh"
-#include "CondClose.mqh"
+#include "TriggerFilterClose.mqh"
 #include "TrendObservation.mqh"
+
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -40,6 +39,7 @@ int OnInit()
    }
    return(INIT_SUCCEEDED);
 }
+
 //+------------------------------------------------------------------+
 //| Expert deinitialization function                                 |
 //+------------------------------------------------------------------+
@@ -51,6 +51,7 @@ void OnDeinit(const int reason)
    }
 
 }
+
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
@@ -91,8 +92,11 @@ void OnTick()
          case DOWN_TREND:
             curr_state_str="Down Trend";
             break;
-         case NOT_TRENDING:
-            curr_state_str="Not Trending";
+         case NOT_TRENDING_FROM_UP:
+            curr_state_str="Not Trending from Up";
+            break;
+         case NOT_TRENDING_FROM_DOWN:
+            curr_state_str="Not Trending from Down";
             break;
       }
       Comment("AROON:",

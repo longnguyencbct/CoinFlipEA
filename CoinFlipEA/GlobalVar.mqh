@@ -4,9 +4,10 @@
 enum MARKET_STATE{
    UP_TREND,
    DOWN_TREND,
-   NOT_TRENDING
+   NOT_TRENDING_FROM_UP,
+   NOT_TRENDING_FROM_DOWN
 };
-// Trend Observation variable
+// Trend Observation variables
 MARKET_STATE curr_state;
 bool new_state=false;
 
@@ -15,8 +16,11 @@ int AROON_handle;
 double AROON_Up[];
 double AROON_Down[];
 
-MqlTick currentTick;
-CTrade trade;
+// Coin Flip variables
 int random_number;
 bool random_signal;
+
+// Ordinary variables
+MqlTick currentTick;
+CTrade trade;
 int cntBuy, cntSell;

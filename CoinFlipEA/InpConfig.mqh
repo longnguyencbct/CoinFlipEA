@@ -2,13 +2,18 @@
 //| Input Configuration                                              |
 //+------------------------------------------------------------------+
 enum LOT_MODE_ENUM{
-   LOT_MODE_FIXED,// fixed lots
-   LOT_MODE_MONEY,// lots based on money
-   LOT_MODE_PCT_ACCOUNT// lots based on % account
+   LOT_MODE_FIXED,            // fixed lots
+   LOT_MODE_MONEY,            // lots based on money
+   LOT_MODE_PCT_ACCOUNT       // lots based on % account
 };
 enum AROON_MODE{
-   COMPARE_LEVEL_MODE,     //compare using level
-   COMPARE_UP_DOWN_MODE    //compare up and down
+   COMPARE_LEVEL_MODE,        //compare using level
+   COMPARE_UP_DOWN_MODE       //compare up and down
+};
+enum CLOSE_MODE{
+   NO_CLOSING,                // no closing condition
+   CLOSE_WHEN_NEW_STATE,      // close when new state
+   CLOSE_WHEN_NEW_DIRECTION   // close when new direction
 };
 input group "==== General ====";
 static input long InpMagicnumber= 234567822;          //magic number
@@ -20,13 +25,13 @@ input ENUM_TIMEFRAMES InpTimeframe = PERIOD_H1;       //Timeframe
 input group "==== Coin Flip Config ====";
 input int InpExeTimes = 1;                            //number of executions
 input bool InpFixedRandom = false;                    //fixed random?
-input group "==== AROON INDICATOR FILTER ====";
+input group "==== TREND FILTER (AROON) ====";
 input ENUM_TIMEFRAMES InpAROONTimeframe = PERIOD_H4;  //Timeframe
 input int InpAROONPeriod = 25;                        //Period (number of bars to count, 0=off)
 input int InpAROONShift = 0;                          //Horizontal Shift;
 input AROON_MODE InpAROONMode = COMPARE_LEVEL_MODE;   //AROON Mode
-input int InpAROONFilterLevel = 50;                   //Filter level in % (compare using level)
-input bool InpAROONCloseAtNewState = false;           //Close trades at new states?
+input int InpAROONFilterVar = 50;                     //Filter level/difference
+input CLOSE_MODE InpCloseCond = NO_CLOSING;           //Close modes
 
 bool CheckInputs(){
    if(InpMagicnumber<=0){
@@ -57,7 +62,7 @@ bool CheckInputs(){
       Alert("Wrong input: AROON Shift < 0");
       return(false);
    }
-   if(InpAROONFilterLevel<0){
+   if(InpAROONFilterVar<0){
       Alert("Wrong input: AROON Filter level < 0");
       return(false);
    }
